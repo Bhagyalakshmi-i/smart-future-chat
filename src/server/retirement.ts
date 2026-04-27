@@ -238,7 +238,7 @@ function generateAdvice({ message, context }: ChatMessageInput): string {
   }
 
   if (/inflation/.test(m)) {
-    return "Assume **2–3% inflation** long-term. Your monthly expense input should reflect *today's* dollars — the 4% rule already bakes in inflation-adjusted withdrawals.";
+    return "Assume **5–6% inflation** long-term in India. Your monthly expense input should reflect *today's* rupees — the 4% rule already bakes in inflation-adjusted withdrawals.";
   }
 
   if (/tax|401k|401\(k\)|ira|roth|hsa|sep|rmd|vesting|employer|match/.test(m)) {

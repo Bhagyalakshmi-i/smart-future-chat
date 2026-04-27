@@ -34,14 +34,14 @@ export const Route = createFileRoute("/")({
 
 const DEFAULTS: RetirementInput = {
   currentAge: 30,
-  retirementAge: 65,
-  currentSavings: 25000,
-  monthlyContribution: 800,
-  expectedAnnualReturn: 7,
-  monthlyRetirementExpenses: 4000,
+  retirementAge: 60,
+  currentSavings: 500000,
+  monthlyContribution: 25000,
+  expectedAnnualReturn: 12,
+  monthlyRetirementExpenses: 60000,
 };
 
-const STORAGE_KEY = "retirement_planner_inputs_v1";
+const STORAGE_KEY = "retirement_planner_inputs_v2_inr";
 
 function Home() {
   const [values, setValues] = useState<RetirementInput>(DEFAULTS);

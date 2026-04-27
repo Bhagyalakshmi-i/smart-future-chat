@@ -19,11 +19,11 @@ const fields: {
 }[] = [
   { key: "currentAge", label: "Current age", min: 16, max: 90, step: 1 },
   { key: "retirementAge", label: "Retirement age", min: 30, max: 100, step: 1 },
-  { key: "currentSavings", label: "Current savings", suffix: "$", step: 1000 },
+  { key: "currentSavings", label: "Current savings", suffix: "₹", step: 1000 },
   {
     key: "monthlyContribution",
     label: "Monthly contribution",
-    suffix: "$",
+    suffix: "₹",
     step: 50,
   },
   {
@@ -37,7 +37,7 @@ const fields: {
   {
     key: "monthlyRetirementExpenses",
     label: "Monthly retirement expenses",
-    suffix: "$",
+    suffix: "₹",
     step: 100,
   },
 ];

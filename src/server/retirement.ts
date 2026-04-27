@@ -232,13 +232,13 @@ function generateAdvice({ message, context }: ChatMessageInput): string {
 
   if (/gap|short|behind|catch.?up|shortfall/.test(m)) {
     if (ctx.savingsGap && ctx.savingsGap > 0 && ctx.suggestedMonthlyContribution) {
-      return `You're projected to fall short by **$${ctx.savingsGap.toLocaleString()}**. To close the gap, increase your monthly contribution to about **$${ctx.suggestedMonthlyContribution.toLocaleString()}**, or consider working a few extra years.`;
+      return `You're projected to fall short by **₹${ctx.savingsGap.toLocaleString("en-IN")}**. To close the gap, increase your monthly contribution to about **₹${ctx.suggestedMonthlyContribution.toLocaleString("en-IN")}**, or consider working a few extra years.`;
     }
     return "Three levers close a savings gap: (1) save more each month, (2) work longer, (3) reduce planned expenses. Even small monthly increases compound dramatically.";
   }
 
   if (/inflation/.test(m)) {
-    return "Assume **2–3% inflation** long-term. Your monthly expense input should reflect *today's* dollars — the 4% rule already bakes in inflation-adjusted withdrawals.";
+    return "Assume **5–6% inflation** long-term in India. Your monthly expense input should reflect *today's* rupees — the 4% rule already bakes in inflation-adjusted withdrawals.";
   }
 
   if (/tax|401k|401\(k\)|ira|roth|hsa|sep|rmd|vesting|employer|match/.test(m)) {
@@ -265,7 +265,7 @@ function generateAdvice({ message, context }: ChatMessageInput): string {
     return "Good news — you're projected to be **on track**. Stay consistent, rebalance annually, and revisit this plan every 12 months.";
   }
   if (ctx.onTrack === false) {
-    return `You're currently off-track. Try increasing your monthly contribution to ~$${(ctx.suggestedMonthlyContribution ?? 0).toLocaleString()} or extending your retirement age by 2–3 years.`;
+    return `You're currently off-track. Try increasing your monthly contribution to ~₹${(ctx.suggestedMonthlyContribution ?? 0).toLocaleString("en-IN")} or extending your retirement age by 2–3 years.`;
   }
 
   return "I can help with the 4% rule, compound interest, asset allocation, closing your savings gap, taxes, and inflation. What would you like to dig into?";

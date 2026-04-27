@@ -11,6 +11,7 @@ import { PlannerForm } from "@/components/PlannerForm";
 import { Dashboard } from "@/components/Dashboard";
 import { Chatbot } from "@/components/Chatbot";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { UserMenu } from "@/components/UserMenu";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -128,6 +129,7 @@ function Home() {
             API
           </Link>
           <ThemeToggle />
+          <UserMenu />
         </div>
       </header>
 

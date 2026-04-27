@@ -41,7 +41,7 @@ const DEFAULTS: RetirementInput = {
   monthlyRetirementExpenses: 60000,
 };
 
-const STORAGE_KEY = "retirement_planner_inputs_v1";
+const STORAGE_KEY = "retirement_planner_inputs_v2_inr";
 
 function Home() {
   const [values, setValues] = useState<RetirementInput>(DEFAULTS);

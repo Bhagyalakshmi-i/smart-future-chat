@@ -232,7 +232,7 @@ function generateAdvice({ message, context }: ChatMessageInput): string {
 
   if (/gap|short|behind|catch.?up|shortfall/.test(m)) {
     if (ctx.savingsGap && ctx.savingsGap > 0 && ctx.suggestedMonthlyContribution) {
-      return `You're projected to fall short by **$${ctx.savingsGap.toLocaleString()}**. To close the gap, increase your monthly contribution to about **$${ctx.suggestedMonthlyContribution.toLocaleString()}**, or consider working a few extra years.`;
+      return `You're projected to fall short by **₹${ctx.savingsGap.toLocaleString("en-IN")}**. To close the gap, increase your monthly contribution to about **₹${ctx.suggestedMonthlyContribution.toLocaleString("en-IN")}**, or consider working a few extra years.`;
     }
     return "Three levers close a savings gap: (1) save more each month, (2) work longer, (3) reduce planned expenses. Even small monthly increases compound dramatically.";
   }

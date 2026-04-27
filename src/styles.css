@@ -34,9 +34,9 @@
   --color-success: var(--success);
   --color-warning: var(--warning);
 
-  --font-display: "Inter Display", "Inter", system-ui, sans-serif;
-  --font-sans: "Inter", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-display: "IBM Plex Sans", system-ui, sans-serif;
+  --font-sans: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 }
 
 /* Stripe / Framer / Lusion-inspired system:

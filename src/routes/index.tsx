@@ -120,6 +120,13 @@ function Home() {
           >
             Co-pilot
           </a>
+          <Link
+            to="/health"
+            className="hidden items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition hover:text-foreground sm:inline-flex"
+          >
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-success" />
+            API
+          </Link>
           <ThemeToggle />
         </div>
       </header>

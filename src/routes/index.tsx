@@ -194,8 +194,11 @@ function Home() {
               Co-pilot
             </p>
             <h2 className="mt-1 text-3xl font-semibold tracking-tight md:text-4xl">
-              Ask anything about your plan
+              Ask anything about your retirement plan
             </h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Scoped strictly to retirement topics — off-topic questions are politely declined.
+            </p>
           </div>
         </div>
         <Chatbot context={result} />

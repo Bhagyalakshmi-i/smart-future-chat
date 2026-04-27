@@ -7,6 +7,16 @@ import {
   CalendarClock,
   ShieldCheck,
 } from "lucide-react";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  Line,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import type { RetirementResult } from "@/server/retirement";
 
 type Props = { data: RetirementResult | null; error: string | null };
@@ -168,6 +178,107 @@ export function Dashboard({ data, error }: Props) {
           </motion.div>
         ))}
       </div>
+
+      {/* Projection chart */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.15 }}
+        className="glass-card rounded-3xl p-5 md:p-6"
+      >
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              Projection
+            </p>
+            <h3 className="mt-1 text-xl font-semibold tracking-tight md:text-2xl">
+              Balance vs. target over time
+            </h3>
+          </div>
+          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full" style={{ background: "oklch(0.55 0.22 268)" }} />
+              Projected balance
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full" style={{ background: "oklch(0.78 0.16 195)" }} />
+              Contributions
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full border border-dashed border-warning" />
+              Target
+            </span>
+          </div>
+        </div>
+        <div className="h-[280px] w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={data.series} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id="balFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="oklch(0.55 0.22 268)" stopOpacity={0.45} />
+                  <stop offset="100%" stopColor="oklch(0.55 0.22 268)" stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id="contribFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="oklch(0.78 0.16 195)" stopOpacity={0.3} />
+                  <stop offset="100%" stopColor="oklch(0.78 0.16 195)" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.5 0.02 260 / 0.18)" vertical={false} />
+              <XAxis
+                dataKey="age"
+                tick={{ fontSize: 11, fill: "oklch(0.6 0.02 260)" }}
+                tickLine={false}
+                axisLine={false}
+                label={{ value: "Age", position: "insideBottom", offset: -2, fontSize: 11, fill: "oklch(0.55 0.02 260)" }}
+              />
+              <YAxis
+                tick={{ fontSize: 11, fill: "oklch(0.6 0.02 260)" }}
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(v: number) =>
+                  v >= 1_000_000 ? `$${(v / 1_000_000).toFixed(1)}M` : `$${Math.round(v / 1000)}k`
+                }
+                width={56}
+              />
+              <Tooltip
+                contentStyle={{
+                  background: "var(--card)",
+                  border: "1px solid var(--border)",
+                  borderRadius: 12,
+                  fontSize: 12,
+                }}
+                labelFormatter={(label: number) => `Age ${label}`}
+                formatter={(value: number, name: string) => [fmt(value), name]}
+              />
+              <Area
+                type="monotone"
+                dataKey="contributions"
+                name="Contributions"
+                stroke="oklch(0.78 0.16 195)"
+                strokeWidth={2}
+                fill="url(#contribFill)"
+              />
+              <Area
+                type="monotone"
+                dataKey="balance"
+                name="Projected balance"
+                stroke="oklch(0.55 0.22 268)"
+                strokeWidth={2.5}
+                fill="url(#balFill)"
+              />
+              <Line
+                type="monotone"
+                dataKey="target"
+                name="Target"
+                stroke="oklch(0.78 0.18 75)"
+                strokeWidth={1.5}
+                strokeDasharray="5 5"
+                dot={false}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </motion.div>
     </div>
   );
 }

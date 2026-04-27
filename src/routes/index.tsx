@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowUpRight, ShieldCheck, Sparkles } from "lucide-react";
@@ -120,6 +120,13 @@ function Home() {
           >
             Co-pilot
           </a>
+          <Link
+            to="/health"
+            className="hidden items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition hover:text-foreground sm:inline-flex"
+          >
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-success" />
+            API
+          </Link>
           <ThemeToggle />
         </div>
       </header>
@@ -187,8 +194,11 @@ function Home() {
               Co-pilot
             </p>
             <h2 className="mt-1 text-3xl font-semibold tracking-tight md:text-4xl">
-              Ask anything about your plan
+              Ask anything about your retirement plan
             </h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Scoped strictly to retirement topics — off-topic questions are politely declined.
+            </p>
           </div>
         </div>
         <Chatbot context={result} />

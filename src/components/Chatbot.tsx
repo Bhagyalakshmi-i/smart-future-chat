@@ -17,6 +17,7 @@ const STARTERS = [
   "How can I close my savings gap?",
   "What allocation suits me?",
   "Tell me about compound interest",
+  "Roth IRA vs 401(k)?",
 ];
 
 export function Chatbot({ context }: { context: RetirementResult | null }) {
@@ -41,7 +42,7 @@ export function Chatbot({ context }: { context: RetirementResult | null }) {
       {
         id: crypto.randomUUID(),
         role: "bot",
-        text: "Hi 👋 I'm your retirement co-pilot. Ask me anything about your plan — I'll factor in your latest numbers.",
+        text: "Hi 👋 I'm your retirement co-pilot. I can **only** answer questions about retirement planning — projections, the 4% rule, contributions, allocation, taxes, and your savings gap. Ask away.",
         at: Date.now(),
       },
     ]);
@@ -229,7 +230,7 @@ export function Chatbot({ context }: { context: RetirementResult | null }) {
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask about the 4% rule, allocation, taxes…"
+            placeholder="Ask about retirement only — 4% rule, allocation, taxes…"
             maxLength={1000}
             className="flex-1 bg-transparent px-2 py-2 text-sm outline-none placeholder:text-muted-foreground"
           />

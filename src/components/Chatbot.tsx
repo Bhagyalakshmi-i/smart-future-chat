@@ -17,6 +17,7 @@ const STARTERS = [
   "How can I close my savings gap?",
   "What allocation suits me?",
   "Tell me about compound interest",
+  "Roth IRA vs 401(k)?",
 ];
 
 export function Chatbot({ context }: { context: RetirementResult | null }) {

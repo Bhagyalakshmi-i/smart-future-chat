@@ -236,7 +236,11 @@ export function Dashboard({ data, error }: Props) {
                 tickLine={false}
                 axisLine={false}
                 tickFormatter={(v: number) =>
-                  v >= 1_000_000 ? `$${(v / 1_000_000).toFixed(1)}M` : `$${Math.round(v / 1000)}k`
+                  v >= 1_00_00_000
+                    ? `₹${(v / 1_00_00_000).toFixed(1)}Cr`
+                    : v >= 1_00_000
+                      ? `₹${(v / 1_00_000).toFixed(1)}L`
+                      : `₹${Math.round(v / 1000)}k`
                 }
                 width={56}
               />

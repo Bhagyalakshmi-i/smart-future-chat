@@ -22,9 +22,9 @@ import type { RetirementResult } from "@/server/retirement";
 type Props = { data: RetirementResult | null; error: string | null };
 
 const fmt = (n: number) =>
-  new Intl.NumberFormat("en-US", {
+  new Intl.NumberFormat("en-IN", {
     style: "currency",
-    currency: "USD",
+    currency: "INR",
     maximumFractionDigits: 0,
   }).format(n);
 

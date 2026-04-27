@@ -111,6 +111,32 @@ function computeProjection(input: RetirementInput): RetirementResult {
   // Sanitize NaN / Infinity
   const clean = (n: number) => (Number.isFinite(n) ? Math.round(n) : 0);
 
+  // Year-by-year projection series for charting
+  const currentYear = new Date().getFullYear();
+  const series: ProjectionPoint[] = [];
+  let balance = input.currentSavings;
+  let totalContributions = input.currentSavings;
+  series.push({
+    age: input.currentAge,
+    year: currentYear,
+    contributions: clean(totalContributions),
+    balance: clean(balance),
+    target: clean(targetCorpus),
+  });
+  for (let y = 1; y <= years; y++) {
+    for (let mo = 0; mo < 12; mo++) {
+      balance = balance * (1 + monthlyRate) + input.monthlyContribution;
+      totalContributions += input.monthlyContribution;
+    }
+    series.push({
+      age: input.currentAge + y,
+      year: currentYear + y,
+      contributions: clean(totalContributions),
+      balance: clean(balance),
+      target: clean(targetCorpus),
+    });
+  }
+
   return {
     yearsLeft: years,
     projectedCorpus: clean(projectedCorpus),
@@ -120,6 +146,7 @@ function computeProjection(input: RetirementInput): RetirementResult {
     suggestedMonthlyContribution: clean(suggestedMonthlyContribution),
     riskLevel,
     onTrack: projectedCorpus >= targetCorpus,
+    series,
   };
 }
 

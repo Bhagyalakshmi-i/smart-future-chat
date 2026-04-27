@@ -230,7 +230,7 @@ export function Chatbot({ context }: { context: RetirementResult | null }) {
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask about the 4% rule, allocation, taxes…"
+            placeholder="Ask about retirement only — 4% rule, allocation, taxes…"
             maxLength={1000}
             className="flex-1 bg-transparent px-2 py-2 text-sm outline-none placeholder:text-muted-foreground"
           />

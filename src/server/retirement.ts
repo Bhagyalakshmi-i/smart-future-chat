@@ -165,24 +165,63 @@ export type ChatMessageInput = {
   context?: Partial<RetirementResult & RetirementInput>;
 };
 
+// Whitelist of retirement-related keywords. Anything outside this scope is rejected.
+const RETIREMENT_KEYWORDS = [
+  "retire", "retirement", "pension", "401k", "401(k)", "ira", "roth",
+  "compound", "interest", "growth", "withdraw", "withdrawal", "4%",
+  "safe withdrawal", "corpus", "savings", "save", "saving", "nest egg",
+  "allocation", "asset", "stocks", "stock", "bonds", "bond", "equity",
+  "equities", "etf", "mutual fund", "index fund", "portfolio", "rebalance",
+  "risk", "aggressive", "conservative", "balanced", "diversif",
+  "inflation", "tax", "taxes", "annuity", "social security", "medicare",
+  "gap", "shortfall", "behind", "catch up", "catchup", "contribution",
+  "contribute", "monthly", "yearly", "annual", "return", "returns",
+  "expenses", "expense", "budget", "income", "fire movement", "fire",
+  "early retirement", "emergency fund", "rule of 25", "rule of 72",
+  "advisor", "advice", "plan", "planning", "projection", "trajectory",
+  "compound interest", "dividend", "dividends", "yield", "rmd",
+  "hsa", "sep", "simple ira", "vesting", "match", "employer",
+];
+
+const GREETINGS = /^(hi|hello|hey|yo|namaste|good (morning|afternoon|evening)|sup|howdy)\b[!.\s]*$/i;
+const THANKS = /^(thanks|thank you|ty|cheers|appreciate)\b/i;
+const HELP_QUERY = /^(help|what can you do|what do you do|how (do|does) (this|you) work|capabilities)\b/i;
+
+function isOnTopic(message: string): boolean {
+  const m = message.toLowerCase();
+  return RETIREMENT_KEYWORDS.some((kw) => m.includes(kw));
+}
+
 function generateAdvice({ message, context }: ChatMessageInput): string {
-  const m = message.toLowerCase().trim();
+  const raw = message.trim();
+  const m = raw.toLowerCase();
   const ctx = context ?? {};
 
-  // Greetings
-  if (/^(hi|hello|hey|yo|namaste)\b/.test(m)) {
-    return "Hi! I'm your retirement co-pilot. Ask me about compound interest, the 4% rule, asset allocation, or how to close your savings gap.";
+  // Allowed conversational shortcuts
+  if (GREETINGS.test(raw)) {
+    return "Hi! I'm your retirement co-pilot. I can only help with **retirement planning** topics — the 4% rule, compound growth, contributions, asset allocation, taxes, and closing your savings gap. What would you like to explore?";
+  }
+  if (THANKS.test(raw)) {
+    return "You're welcome — happy to keep planning your retirement with you.";
+  }
+  if (HELP_QUERY.test(raw)) {
+    return "I'm a focused **retirement advisory** assistant. Ask me about:\n• The 4% safe-withdrawal rule\n• Compound interest & projections\n• Asset allocation by age\n• Closing your savings gap\n• Tax-advantaged accounts (401k, IRA, Roth)\n• Inflation & emergency funds";
   }
 
-  if (/4%|withdrawal|safe withdrawal/.test(m)) {
+  // Hard topic guard — reject anything not retirement-related
+  if (!isOnTopic(m)) {
+    return "I'm a **retirement advisory** assistant and can only answer questions about retirement planning — things like the 4% rule, compound growth, contributions, allocation, taxes, or your savings gap. Could you rephrase your question in that context?";
+  }
+
+  if (/4%|withdrawal|safe withdrawal|rule of 25/.test(m)) {
     return "The **4% rule** suggests you can withdraw 4% of your portfolio in year one of retirement, then adjust for inflation each year — historically lasting ~30 years. That's why your target corpus is roughly 25× your annual expenses.";
   }
 
-  if (/compound|interest|growth/.test(m)) {
+  if (/compound|interest|growth|rule of 72/.test(m)) {
     return "Compound interest is the engine of retirement. Each month, returns earn returns on themselves. Starting 10 years earlier can easily **double** your final corpus — time matters more than amount.";
   }
 
-  if (/risk|allocation|stocks|bonds|equity/.test(m)) {
+  if (/risk|allocation|stocks?|bonds?|equit|portfolio|etf|index fund|diversif|rebalance/.test(m)) {
     const lvl = ctx.riskLevel ?? "Balanced";
     if (lvl === "Aggressive")
       return "With 25+ years until retirement, an **aggressive** allocation (~80–90% equities) is usually appropriate. Volatility is your friend when you're buying every month.";
@@ -191,7 +230,7 @@ function generateAdvice({ message, context }: ChatMessageInput): string {
     return "A **balanced** mix (~60–70% equities, the rest in bonds) suits a 10–25 year horizon. Rebalance once a year.";
   }
 
-  if (/gap|short|behind|catch.?up/.test(m)) {
+  if (/gap|short|behind|catch.?up|shortfall/.test(m)) {
     if (ctx.savingsGap && ctx.savingsGap > 0 && ctx.suggestedMonthlyContribution) {
       return `You're projected to fall short by **$${ctx.savingsGap.toLocaleString()}**. To close the gap, increase your monthly contribution to about **$${ctx.suggestedMonthlyContribution.toLocaleString()}**, or consider working a few extra years.`;
     }
@@ -202,16 +241,24 @@ function generateAdvice({ message, context }: ChatMessageInput): string {
     return "Assume **2–3% inflation** long-term. Your monthly expense input should reflect *today's* dollars — the 4% rule already bakes in inflation-adjusted withdrawals.";
   }
 
-  if (/tax|401k|ira|roth/.test(m)) {
+  if (/tax|401k|401\(k\)|ira|roth|hsa|sep|rmd|vesting|employer|match/.test(m)) {
     return "Maximize tax-advantaged accounts first: employer match → Roth IRA → max 401(k). A Roth is especially powerful when you're in a low tax bracket today.";
   }
 
-  if (/emergency|fund/.test(m)) {
+  if (/emergency.*fund|emergency/.test(m)) {
     return "Keep **3–6 months of expenses** in a high-yield savings account *before* aggressive investing. It prevents you from selling investments at the worst time.";
   }
 
-  if (/start|begin|how/.test(m)) {
-    return "Start with three numbers: your monthly expenses, your current savings, and your target retirement age. Fill the planner on the left — I'll calculate your trajectory instantly.";
+  if (/social security|medicare|annuity|pension/.test(m)) {
+    return "Treat **Social Security** (or pensions/annuities) as a *floor*, not a plan. Delaying Social Security to age 70 increases benefits by ~8% per year of delay after full retirement age.";
+  }
+
+  if (/dividend|yield/.test(m)) {
+    return "Dividends can supplement retirement income, but **total return** matters more than yield. Don't chase high yields — they often signal elevated risk.";
+  }
+
+  if (/fire|early retirement/.test(m)) {
+    return "**FIRE** (Financial Independence, Retire Early) usually targets 25–30× annual expenses saved. The math: a higher savings rate matters far more than investment returns in the early years.";
   }
 
   if (ctx.onTrack === true) {

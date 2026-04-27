@@ -186,6 +186,23 @@ const RETIREMENT_KEYWORDS = [
 const GREETINGS = /^(hi|hello|hey|yo|namaste|good (morning|afternoon|evening)|sup|howdy)\b[!.\s]*$/i;
 const THANKS = /^(thanks|thank you|ty|cheers|appreciate)\b/i;
 const HELP_QUERY = /^(help|what can you do|what do you do|how (do|does) (this|you) work|capabilities)\b/i;
+const CALC_INTENT = /(calculate|compute|project|how much|will i have|enough|on track|plan for me|my retirement|build (a|my) plan|run the numbers)/i;
+
+const DISCLAIMER =
+  "\n\n_⚠️ Educational guidance only — not professional financial advice. Please consult a certified advisor for personal decisions._";
+
+/** Identify which key planning inputs are missing from the chat context. */
+function missingInputs(ctx: Partial<RetirementResult & RetirementInput>): string[] {
+  const missing: string[] = [];
+  if (!isFiniteNumber(ctx.currentAge)) missing.push("your **current age**");
+  if (!isFiniteNumber(ctx.retirementAge)) missing.push("your **target retirement age**");
+  if (!isFiniteNumber(ctx.currentSavings)) missing.push("your **current savings (₹)**");
+  if (!isFiniteNumber(ctx.monthlyContribution))
+    missing.push("how much you **invest each month (₹)**");
+  if (!isFiniteNumber(ctx.monthlyRetirementExpenses))
+    missing.push("your **expected monthly expenses in retirement (₹)**");
+  return missing;
+}
 
 function isOnTopic(message: string): boolean {
   const m = message.toLowerCase();

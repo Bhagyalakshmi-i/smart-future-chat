@@ -17,6 +17,14 @@ export type RetirementInput = {
   monthlyRetirementExpenses: number;
 };
 
+export type ProjectionPoint = {
+  age: number;
+  year: number;
+  contributions: number;
+  balance: number;
+  target: number;
+};
+
 export type RetirementResult = {
   yearsLeft: number;
   projectedCorpus: number;
@@ -26,6 +34,7 @@ export type RetirementResult = {
   suggestedMonthlyContribution: number;
   riskLevel: "Aggressive" | "Balanced" | "Conservative";
   onTrack: boolean;
+  series: ProjectionPoint[];
 };
 
 function isFiniteNumber(n: unknown): n is number {

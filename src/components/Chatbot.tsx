@@ -42,7 +42,7 @@ export function Chatbot({ context }: { context: RetirementResult | null }) {
       {
         id: crypto.randomUUID(),
         role: "bot",
-        text: "Hi 👋 I'm your retirement co-pilot. Ask me anything about your plan — I'll factor in your latest numbers.",
+        text: "Hi 👋 I'm your retirement co-pilot. I can **only** answer questions about retirement planning — projections, the 4% rule, contributions, allocation, taxes, and your savings gap. Ask away.",
         at: Date.now(),
       },
     ]);

@@ -265,7 +265,7 @@ function generateAdvice({ message, context }: ChatMessageInput): string {
     return "Good news — you're projected to be **on track**. Stay consistent, rebalance annually, and revisit this plan every 12 months.";
   }
   if (ctx.onTrack === false) {
-    return `You're currently off-track. Try increasing your monthly contribution to ~$${(ctx.suggestedMonthlyContribution ?? 0).toLocaleString()} or extending your retirement age by 2–3 years.`;
+    return `You're currently off-track. Try increasing your monthly contribution to ~₹${(ctx.suggestedMonthlyContribution ?? 0).toLocaleString("en-IN")} or extending your retirement age by 2–3 years.`;
   }
 
   return "I can help with the 4% rule, compound interest, asset allocation, closing your savings gap, taxes, and inflation. What would you like to dig into?";

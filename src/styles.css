@@ -287,4 +287,133 @@
   .animate-pulse-dot {
     animation: pulse-dot 1.4s ease-in-out infinite;
   }
+
+  /* Animated aurora drift */
+  @keyframes aurora-drift {
+    0%   { background-position: 0% 0%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 100%; }
+  }
+
+  /* Animated gradient text shimmer */
+  .text-gradient-animated {
+    background: linear-gradient(
+      110deg,
+      oklch(0.55 0.22 268) 0%,
+      oklch(0.7 0.18 220) 25%,
+      oklch(0.78 0.16 195) 50%,
+      oklch(0.7 0.18 220) 75%,
+      oklch(0.55 0.22 268) 100%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: text-shimmer 6s linear infinite;
+  }
+  @keyframes text-shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* Conic gradient halo for hero / cards */
+  .conic-halo {
+    position: relative;
+    isolation: isolate;
+  }
+  .conic-halo::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: conic-gradient(
+      from 180deg at 50% 50%,
+      oklch(0.55 0.22 268 / 0.6),
+      oklch(0.78 0.16 195 / 0.5),
+      oklch(0.85 0.18 130 / 0.4),
+      oklch(0.55 0.22 268 / 0.6)
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    z-index: -1;
+    animation: conic-spin 12s linear infinite;
+  }
+  @keyframes conic-spin {
+    to { transform: rotate(1turn); }
+  }
+
+  /* Shimmer sweep across an element (for buttons) */
+  .shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  .shimmer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      110deg,
+      transparent 35%,
+      oklch(1 0 0 / 0.18) 50%,
+      transparent 65%
+    );
+    transform: translateX(-100%);
+    transition: transform 0.8s ease;
+  }
+  .shimmer:hover::after {
+    transform: translateX(100%);
+  }
+
+  /* Refined glass with inner highlight */
+  .glass-pro {
+    background: var(--gradient-card);
+    backdrop-filter: blur(24px) saturate(160%) brightness(1.05);
+    -webkit-backdrop-filter: blur(24px) saturate(160%) brightness(1.05);
+    border: 1px solid var(--color-border);
+    box-shadow:
+      var(--shadow-card),
+      inset 0 1px 0 oklch(1 0 0 / 0.12);
+  }
+
+  /* Subtle 3D tilt on hover */
+  .tilt-hover {
+    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+                box-shadow 0.5s ease;
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+  .tilt-hover:hover {
+    transform: perspective(1000px) rotateX(2deg) rotateY(-2deg) translateY(-4px);
+    box-shadow: var(--shadow-glow);
+  }
+
+  /* Numeric tabular figures */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+
+  /* Smooth scroll snap container */
+  .snap-x-smooth {
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+  }
+  .snap-x-smooth::-webkit-scrollbar { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .text-gradient-animated,
+  .conic-halo::before,
+  .animate-float-slow,
+  .animate-pulse-dot {
+    animation: none !important;
+  }
 }

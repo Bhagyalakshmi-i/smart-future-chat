@@ -7,6 +7,16 @@ import {
   CalendarClock,
   ShieldCheck,
 } from "lucide-react";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  Line,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import type { RetirementResult } from "@/server/retirement";
 
 type Props = { data: RetirementResult | null; error: string | null };

@@ -54,6 +54,8 @@ export function Chatbot({ context }: { context: RetirementResult | null }) {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
+  const [activeGroup, setActiveGroup] = useState<string>(SUGGESTION_GROUPS[0].label);
+  const [suggestionsOpen, setSuggestionsOpen] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // load history

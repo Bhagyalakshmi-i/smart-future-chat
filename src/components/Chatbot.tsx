@@ -235,20 +235,60 @@ export function Chatbot({ context }: { context: RetirementResult | null }) {
         )}
       </div>
 
-      {/* starters */}
-      {messages.length <= 1 && (
-        <div className="flex flex-wrap gap-2 border-t border-border px-5 py-3">
-          {STARTERS.map((s) => (
-            <button
-              key={s}
-              onClick={() => send(s)}
-              className="rounded-full border border-border bg-card/60 px-3 py-1.5 text-xs font-medium text-muted-foreground transition hover:border-primary/40 hover:bg-card hover:text-foreground"
+      {/* suggestions */}
+      <div className="border-t border-border">
+        <button
+          type="button"
+          onClick={() => setSuggestionsOpen((v) => !v)}
+          className="flex w-full items-center justify-between px-5 py-2.5 text-xs font-medium text-muted-foreground transition hover:text-foreground"
+        >
+          <span className="inline-flex items-center gap-1.5">
+            <Sparkles className="h-3.5 w-3.5 text-primary" />
+            Suggested questions
+          </span>
+          {suggestionsOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronUp className="h-3.5 w-3.5" />}
+        </button>
+
+        <AnimatePresence initial={false}>
+          {suggestionsOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden"
             >
-              {s}
-            </button>
-          ))}
-        </div>
-      )}
+              <div className="flex gap-1.5 px-5 pb-2">
+                {SUGGESTION_GROUPS.map((g) => (
+                  <button
+                    key={g.label}
+                    onClick={() => setActiveGroup(g.label)}
+                    className={`rounded-full px-2.5 py-1 text-[11px] font-medium transition ${
+                      activeGroup === g.label
+                        ? "bg-primary text-primary-foreground"
+                        : "border border-border bg-card/40 text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {g.label}
+                  </button>
+                ))}
+              </div>
+              <div className="flex flex-wrap gap-2 px-5 pb-3">
+                {SUGGESTION_GROUPS.find((g) => g.label === activeGroup)!.prompts.map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => send(s)}
+                    disabled={typing}
+                    className="rounded-full border border-border bg-card/60 px-3 py-1.5 text-xs font-medium text-muted-foreground transition hover:border-primary/40 hover:bg-card hover:text-foreground disabled:opacity-50"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       {/* input */}
       <form

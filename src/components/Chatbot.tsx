@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Bot, User, Trash2 } from "lucide-react";
+import { Send, Bot, User, Trash2, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
 import { chatRespond, type RetirementResult } from "@/server/retirement";
 
 type Msg = {

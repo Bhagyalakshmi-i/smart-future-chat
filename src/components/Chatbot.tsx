@@ -20,6 +20,36 @@ const STARTERS = [
   "Roth IRA vs 401(k)?",
 ];
 
+const SUGGESTION_GROUPS: { label: string; prompts: string[] }[] = [
+  {
+    label: "Basics",
+    prompts: [
+      "Explain the 4% rule",
+      "What is compound interest?",
+      "How much should I save each month?",
+      "When can I retire?",
+    ],
+  },
+  {
+    label: "My plan",
+    prompts: [
+      "Am I on track?",
+      "How can I close my savings gap?",
+      "What allocation suits me?",
+      "How does inflation affect my goal?",
+    ],
+  },
+  {
+    label: "Accounts & taxes",
+    prompts: [
+      "Roth IRA vs 401(k)?",
+      "Should I max my employer match?",
+      "Tax-efficient withdrawal order?",
+      "What about HSA for retirement?",
+    ],
+  },
+];
+
 export function Chatbot({ context }: { context: RetirementResult | null }) {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");

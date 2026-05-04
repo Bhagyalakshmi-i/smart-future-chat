@@ -216,18 +216,18 @@ function generateAdvice({ message, context }: ChatMessageInput): string {
 
   // Allowed conversational shortcuts
   if (GREETINGS.test(raw)) {
-    return "Hi! I'm your **Retirement Savings Advisor**. I can help with retirement projections, the 4% rule, compound growth, monthly contributions, asset allocation, taxes, inflation, and closing your savings gap.\n\nTell me a bit about yourself — your **current age**, **target retirement age**, **current savings**, **monthly investment**, and **expected monthly expenses in retirement** — and I'll run the numbers.";
+    return "Hi! 👋 I'm your **Retirement Helper**. I can explain things in simple words — like how much to save, the 4% rule, how your money grows, where to invest, and how taxes work.\n\nTo plan for you, just tell me:\n• Your **age now**\n• The **age you want to retire**\n• How much you've **saved so far**\n• How much you **save each month**\n• How much you'll **spend each month after retiring**";
   }
   if (THANKS.test(raw)) {
-    return "You're welcome — happy to keep planning your retirement with you.";
+    return "You're welcome! 😊 Happy to help anytime.";
   }
   if (HELP_QUERY.test(raw)) {
-    return "I'm a focused **retirement advisory** assistant. Ask me about:\n• The 4% safe-withdrawal rule\n• Compound interest & projections\n• Monthly investments & savings goals\n• Asset allocation by age\n• Closing your savings gap\n• Tax-advantaged accounts (401k, IRA, Roth, NPS, PPF)\n• Inflation, emergency funds & retirement income" + DISCLAIMER;
+    return "I'm a simple **retirement helper**. You can ask me things like:\n• What is the 4% rule?\n• How does compound interest work?\n• How much should I save every month?\n• Where should I put my money — stocks or bonds?\n• How do I catch up if I'm behind?\n• Which accounts save the most tax (401k, IRA, Roth, NPS, PPF)?\n• How much do I need to retire?" + DISCLAIMER;
   }
 
   // Hard topic guard — reject anything not retirement-related
   if (!isOnTopic(m)) {
-    return "I'm a **retirement advisory** assistant and can only answer questions about retirement planning — things like the 4% rule, compound growth, contributions, allocation, taxes, or your savings gap. Could you rephrase your question in that context?";
+    return "I can only help with **retirement questions** — like saving, investing, the 4% rule, taxes, or planning your retirement income. Could you ask your question in that way?";
   }
 
   // If the user asks for a calculation but key inputs are missing, ask for them
@@ -235,88 +235,88 @@ function generateAdvice({ message, context }: ChatMessageInput): string {
     const missing = missingInputs(ctx);
     if (missing.length) {
       return (
-        "Happy to run the numbers. To give you an accurate projection, I need:\n• " +
+        "Sure, I can do the math for you! I just need a few details:\n• " +
         missing.join("\n• ") +
-        "\n\nYou can fill these in the **Planner** form on the left, or just type them here." +
+        "\n\nYou can type them here, or fill the **Planner** form on the left." +
         DISCLAIMER
       );
     }
     if (ctx.projectedCorpus && ctx.targetCorpus) {
       const fmt = (n: number) => `₹${n.toLocaleString("en-IN")}`;
       return (
-        `Based on your inputs, you're projected to have **${fmt(ctx.projectedCorpus)}** by retirement, ` +
-        `against a target of **${fmt(ctx.targetCorpus)}** (25× annual expenses, per the 4% rule). ` +
+        `Here's what I see: by the time you retire, you'll likely have **${fmt(ctx.projectedCorpus)}**. ` +
+        `You need around **${fmt(ctx.targetCorpus)}** (that's 25 times your yearly spending — the 4% rule). ` +
         (ctx.onTrack
-          ? "You're **on track** — keep going! 🎯"
-          : `You're short by **${fmt(ctx.savingsGap ?? 0)}**. Consider raising your monthly investment to **${fmt(ctx.suggestedMonthlyContribution ?? 0)}**.`) +
+          ? "Great news — you're **on track**! Just keep going. 🎯"
+          : `You're a bit short — by **${fmt(ctx.savingsGap ?? 0)}**. Try saving **${fmt(ctx.suggestedMonthlyContribution ?? 0)}** every month to catch up.`) +
         DISCLAIMER
       );
     }
   }
 
   if (/4%|withdrawal|safe withdrawal|rule of 25/.test(m)) {
-    return "The **4% rule** suggests you can withdraw 4% of your portfolio in year one of retirement, then adjust for inflation each year — historically lasting ~30 years. That's why your target corpus is roughly **25× your annual expenses**." + DISCLAIMER;
+    return "The **4% rule** is simple: in your first year of retirement, take out 4% of your savings to live on. Each year after, take a little more to keep up with prices. Your money should last about 30 years.\n\nQuick trick: you need about **25 times your yearly spending** saved up to retire safely." + DISCLAIMER;
   }
 
   if (/compound|interest|growth|rule of 72/.test(m)) {
-    return "**Compound interest** is the engine of retirement. Each month, returns earn returns on themselves. Starting 10 years earlier can easily **double** your final corpus — time matters more than amount.\n\n_Rule of 72_: divide 72 by your return rate to estimate how many years your money takes to double (e.g. 12% → ~6 years)." + DISCLAIMER;
+    return "**Compound interest** means your money earns money — and then *that* money also earns money. Over time, it grows really fast. 🌱\n\nStarting **10 years earlier** can almost **double** what you end up with. Time matters more than amount!\n\n_Easy trick (Rule of 72)_: divide 72 by your return rate to see how many years it takes your money to double. Example: 12% return → ~6 years to double." + DISCLAIMER;
   }
 
   if (/risk|allocation|stocks?|bonds?|equit|portfolio|etf|index fund|diversif|rebalance/.test(m)) {
     const lvl = ctx.riskLevel ?? "Balanced";
     if (lvl === "Aggressive")
-      return "With 25+ years until retirement, an **aggressive** allocation (~80–90% equities) is usually appropriate. Volatility is your friend when you're buying every month." + DISCLAIMER;
+      return "You have lots of time (25+ years), so you can take more risk. Put most of your money (around **80–90%**) in **stocks**. Ups and downs are okay — they actually help when you're buying every month." + DISCLAIMER;
     if (lvl === "Conservative")
-      return "With under 10 years left, shift toward **capital preservation**: ~40–60% equities, the rest in high-quality bonds and short-duration instruments." + DISCLAIMER;
-    return "A **balanced** mix (~60–70% equities, the rest in bonds) suits a 10–25 year horizon. Rebalance once a year." + DISCLAIMER;
+      return "You're getting close to retirement (under 10 years), so play it safer. Keep about **40–60% in stocks** and the rest in **bonds** or safer options. The goal now is to protect what you have." + DISCLAIMER;
+    return "A **balanced mix** works well for you: about **60–70% in stocks** and the rest in **bonds**. Check it once a year and adjust if needed." + DISCLAIMER;
   }
 
   if (/gap|short|behind|catch.?up|shortfall/.test(m)) {
     if (ctx.savingsGap && ctx.savingsGap > 0 && ctx.suggestedMonthlyContribution) {
-      return `You're projected to fall short by **₹${ctx.savingsGap.toLocaleString("en-IN")}**. To close the gap, increase your monthly contribution to about **₹${ctx.suggestedMonthlyContribution.toLocaleString("en-IN")}**, or consider working a few extra years.` + DISCLAIMER;
+      return `Looks like you're short by **₹${ctx.savingsGap.toLocaleString("en-IN")}**. To catch up, try saving about **₹${ctx.suggestedMonthlyContribution.toLocaleString("en-IN")}** every month — or work a couple of extra years before retiring.` + DISCLAIMER;
     }
-    return "Three levers close a savings gap: (1) **save more** each month, (2) **work longer**, (3) **reduce planned expenses**. Even small monthly increases compound dramatically." + DISCLAIMER;
+    return "Three easy ways to catch up:\n1. **Save more** each month\n2. **Work a few more years**\n3. **Spend a little less** in retirement\n\nEven small extra savings add up over time!" + DISCLAIMER;
   }
 
   if (/inflation/.test(m)) {
-    return "Assume **5–6% inflation** long-term in India. Your monthly expense input should reflect *today's* rupees — the 4% rule already bakes in inflation-adjusted withdrawals." + DISCLAIMER;
+    return "**Inflation** means things cost more over time. In India, plan for prices to go up about **5–6% every year**. When you tell me your monthly expenses, use **today's prices** — the 4% rule already handles future price increases for you." + DISCLAIMER;
   }
 
   if (/tax|401k|401\(k\)|ira|roth|hsa|sep|rmd|vesting|employer|match/.test(m)) {
-    return "Maximize **tax-advantaged accounts** first: employer match → Roth IRA → max 401(k). In India, look at **EPF, PPF, NPS, and ELSS** under Section 80C/80CCD. A Roth is especially powerful when you're in a low tax bracket today." + DISCLAIMER;
+    return "Save tax first, then invest more!\n• If your job offers a **401(k) match**, take it — it's free money\n• Then put money in a **Roth IRA** (grows tax-free)\n• In India, use **EPF, PPF, NPS, and ELSS** to save tax under Section 80C/80CCD\n\nA Roth account works great when you don't pay much tax today." + DISCLAIMER;
   }
 
   if (/emergency.*fund|emergency/.test(m)) {
-    return "Keep **3–6 months of expenses** in a high-yield savings account *before* aggressive investing. It prevents you from selling investments at the worst time." + DISCLAIMER;
+    return "Before investing big, save **3 to 6 months of expenses** in a regular savings account. This way, if something goes wrong, you don't have to sell your investments at a bad time." + DISCLAIMER;
   }
 
   if (/social security|medicare|annuity|pension/.test(m)) {
-    return "Treat **Social Security / pensions / annuities** as a *floor*, not a plan. Delaying Social Security to age 70 increases benefits by ~8% per year of delay after full retirement age." + DISCLAIMER;
+    return "Pensions and **Social Security** are nice to have, but don't depend on them alone. They should be a **safety net**, not your full plan. If you can wait until age 70 to claim Social Security, you get about **8% more per year** for waiting." + DISCLAIMER;
   }
 
   if (/dividend|yield/.test(m)) {
-    return "Dividends can supplement retirement income, but **total return** matters more than yield. Don't chase high yields — they often signal elevated risk." + DISCLAIMER;
+    return "**Dividends** are small payouts companies give to shareholders. They can add to your income, but don't only chase high dividends — sometimes that means more risk. Look at **total growth**, not just the payout." + DISCLAIMER;
   }
 
   if (/fire|early retirement/.test(m)) {
-    return "**FIRE** (Financial Independence, Retire Early) usually targets **25–30× annual expenses** saved. The math: a higher savings rate matters far more than investment returns in the early years." + DISCLAIMER;
+    return "**FIRE** stands for *Financial Independence, Retire Early*. The idea: save **25 to 30 times your yearly spending** as fast as you can. The trick isn't picking great investments — it's **saving a lot of your income** every month." + DISCLAIMER;
   }
 
   if (/income|monthly income/.test(m)) {
     if (ctx.monthlyIncomeEstimate) {
-      return `At a 4% safe withdrawal rate, your projected corpus would generate roughly **₹${ctx.monthlyIncomeEstimate.toLocaleString("en-IN")}/month** in retirement income.` + DISCLAIMER;
+      return `Using the 4% rule, your savings would give you about **₹${ctx.monthlyIncomeEstimate.toLocaleString("en-IN")} every month** in retirement.` + DISCLAIMER;
     }
-    return "Your monthly retirement income ≈ **(corpus × 4%) ÷ 12**. Fill in the planner to see your personal estimate." + DISCLAIMER;
+    return "Easy formula: **(your savings × 4%) ÷ 12 = monthly income**. Fill in the planner and I'll calculate it for you." + DISCLAIMER;
   }
 
   if (ctx.onTrack === true) {
-    return "Good news — you're projected to be **on track**. Stay consistent, rebalance annually, and revisit this plan every 12 months." + DISCLAIMER;
+    return "Great job — you're **on track**! 🎉 Just keep saving the same amount, check once a year, and you'll reach your goal." + DISCLAIMER;
   }
   if (ctx.onTrack === false) {
-    return `You're currently **off-track**. Try increasing your monthly contribution to ~₹${(ctx.suggestedMonthlyContribution ?? 0).toLocaleString("en-IN")} or extending your retirement age by 2–3 years.` + DISCLAIMER;
+    return `Right now you're a little **behind**. Don't worry — try saving about **₹${(ctx.suggestedMonthlyContribution ?? 0).toLocaleString("en-IN")}** each month, or plan to retire 2 to 3 years later. Either one helps a lot.` + DISCLAIMER;
   }
 
-  return "I can help with the 4% rule, compound interest, monthly investments, asset allocation, closing your savings gap, taxes, and inflation. What would you like to dig into?" + DISCLAIMER;
+  return "I can help you with the 4% rule, how money grows, monthly savings, where to invest, taxes, and how to catch up if you're behind. What would you like to know?" + DISCLAIMER;
 }
 
 export const chatRespond = createServerFn({ method: "POST" })

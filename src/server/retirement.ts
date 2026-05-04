@@ -319,6 +319,94 @@ function generateAdvice({ message, context }: ChatMessageInput): string {
   return "I can help you with the 4% rule, how money grows, monthly savings, where to invest, taxes, and how to catch up if you're behind. What would you like to know?" + DISCLAIMER;
 }
 
+/** Build a compact, model-friendly summary of the user's plan context. */
+function summarizeContext(ctx: Partial<RetirementResult & RetirementInput>): string {
+  const fmt = (n?: number) =>
+    isFiniteNumber(n) ? `₹${Math.round(n).toLocaleString("en-IN")}` : "unknown";
+  const parts: string[] = [];
+  if (isFiniteNumber(ctx.currentAge)) parts.push(`current age: ${ctx.currentAge}`);
+  if (isFiniteNumber(ctx.retirementAge)) parts.push(`target retirement age: ${ctx.retirementAge}`);
+  if (isFiniteNumber(ctx.currentSavings)) parts.push(`current savings: ${fmt(ctx.currentSavings)}`);
+  if (isFiniteNumber(ctx.monthlyContribution))
+    parts.push(`monthly contribution: ${fmt(ctx.monthlyContribution)}`);
+  if (isFiniteNumber(ctx.expectedAnnualReturn))
+    parts.push(`expected annual return: ${ctx.expectedAnnualReturn}%`);
+  if (isFiniteNumber(ctx.monthlyRetirementExpenses))
+    parts.push(`monthly retirement expenses: ${fmt(ctx.monthlyRetirementExpenses)}`);
+  if (isFiniteNumber(ctx.projectedCorpus))
+    parts.push(`projected corpus at retirement: ${fmt(ctx.projectedCorpus)}`);
+  if (isFiniteNumber(ctx.targetCorpus)) parts.push(`target corpus (4% rule): ${fmt(ctx.targetCorpus)}`);
+  if (isFiniteNumber(ctx.savingsGap)) parts.push(`savings gap: ${fmt(ctx.savingsGap)}`);
+  if (isFiniteNumber(ctx.monthlyIncomeEstimate))
+    parts.push(`projected monthly income in retirement: ${fmt(ctx.monthlyIncomeEstimate)}`);
+  if (isFiniteNumber(ctx.suggestedMonthlyContribution))
+    parts.push(`suggested monthly contribution: ${fmt(ctx.suggestedMonthlyContribution)}`);
+  if (typeof ctx.onTrack === "boolean") parts.push(`on track: ${ctx.onTrack ? "yes" : "no"}`);
+  if (ctx.riskLevel) parts.push(`risk profile: ${ctx.riskLevel}`);
+
+  // Peak / milestone ages from the projection series
+  if (Array.isArray(ctx.series) && ctx.series.length > 0) {
+    const peak = ctx.series.reduce((a, b) => (b.balance > a.balance ? b : a));
+    parts.push(`peak corpus age: ${peak.age} (${fmt(peak.balance)})`);
+    const target = ctx.targetCorpus ?? 0;
+    if (target > 0) {
+      const hit = ctx.series.find((p) => p.balance >= target);
+      if (hit) parts.push(`target corpus reached at age: ${hit.age}`);
+      else parts.push(`target corpus NOT reached within projection`);
+    }
+  }
+
+  return parts.length ? parts.join("; ") : "no plan data yet";
+}
+
+const SYSTEM_PROMPT = `You are "Retirement Helper", a friendly retirement-planning co-pilot.
+
+STRICT SCOPE: Only answer questions about retirement planning — saving, investing, compounding, the 4% rule, asset allocation, risk, inflation, taxes (401k, IRA, Roth, HSA, EPF, PPF, NPS, ELSS), pensions, Social Security, FIRE, withdrawal strategies, and projecting corpus / monthly income. If the user asks about anything off-topic (weather, coding, news, relationships, etc.), politely refuse in one sentence and steer them back to retirement.
+
+STYLE:
+- Use very simple, plain English. Short sentences. Friendly tone.
+- Use **bold** for key numbers and terms. Use bullet points when helpful.
+- Keep replies under ~150 words unless the user asks for detail.
+- Never invent numbers. If the user's plan context is missing data needed to answer, ask for it.
+- Always end with a short disclaimer line (one sentence).
+
+USE THE PLAN CONTEXT below when present. It already contains computed projections (4% rule = need 25× yearly expenses). When asked things like "at what age will I have the most money", use the "peak corpus age" or "target corpus reached at age" facts directly. Do not recompute.`;
+
+async function llmAdvice({ message, context }: ChatMessageInput): Promise<string> {
+  const apiKey = process.env.LOVABLE_API_KEY;
+  if (!apiKey) throw new Error("LOVABLE_API_KEY not configured");
+
+  const ctxSummary = summarizeContext(context ?? {});
+  const userContent = `PLAN CONTEXT: ${ctxSummary}\n\nUSER QUESTION: ${message}`;
+
+  const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "google/gemini-2.5-flash",
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        { role: "user", content: userContent },
+      ],
+    }),
+  });
+
+  if (res.status === 429) throw new Error("Rate limit reached. Please wait a moment and try again.");
+  if (res.status === 402)
+    throw new Error("AI credits exhausted. Please add credits in Lovable Cloud → Settings.");
+  if (!res.ok) throw new Error(`AI request failed (${res.status})`);
+
+  const json = (await res.json()) as {
+    choices?: { message?: { content?: string } }[];
+  };
+  const reply = json.choices?.[0]?.message?.content?.trim();
+  if (!reply) throw new Error("Empty AI response");
+  return reply;
+}
+
 export const chatRespond = createServerFn({ method: "POST" })
   .inputValidator((input: ChatMessageInput) => {
     if (!input || typeof input.message !== "string")
@@ -328,9 +416,19 @@ export const chatRespond = createServerFn({ method: "POST" })
     return input;
   })
   .handler(async ({ data }) => {
-    // Simulate small thinking latency for nicer UX
-    await new Promise((r) => setTimeout(r, 350));
-    return { reply: generateAdvice(data), at: new Date().toISOString() };
+    try {
+      const reply = await llmAdvice(data);
+      return { reply, at: new Date().toISOString() };
+    } catch (err) {
+      // Fallback to the rule-based responder so the chat keeps working
+      console.error("LLM advice failed, falling back:", err);
+      const fallback = generateAdvice(data);
+      const note =
+        err instanceof Error && /credits|rate limit/i.test(err.message)
+          ? `\n\n_(${err.message})_`
+          : "";
+      return { reply: fallback + note, at: new Date().toISOString() };
+    }
   });
 
 export const healthCheck = createServerFn({ method: "GET" }).handler(

@@ -12,14 +12,6 @@ type Msg = {
 
 const STORAGE_KEY = "retirement_chat_history_v1";
 
-const STARTERS = [
-  "Explain the 4% rule",
-  "How can I close my savings gap?",
-  "What allocation suits me?",
-  "Tell me about compound interest",
-  "Roth IRA vs 401(k)?",
-];
-
 const SUGGESTION_GROUPS: { label: string; prompts: string[] }[] = [
   {
     label: "Basics",

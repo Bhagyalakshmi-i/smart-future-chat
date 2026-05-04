@@ -189,7 +189,7 @@ const HELP_QUERY = /^(help|what can you do|what do you do|how (do|does) (this|yo
 const CALC_INTENT = /(calculate|compute|project|how much|will i have|enough|on track|plan for me|my retirement|build (a|my) plan|run the numbers)/i;
 
 const DISCLAIMER =
-  "\n\n_⚠️ Educational guidance only — not professional financial advice. Please consult a certified advisor for personal decisions._";
+  "\n\n_⚠️ Just a friendly tip — not real financial advice. Please talk to a qualified advisor before making big money decisions._";
 
 /** Identify which key planning inputs are missing from the chat context. */
 function missingInputs(ctx: Partial<RetirementResult & RetirementInput>): string[] {
